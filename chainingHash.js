@@ -1,4 +1,4 @@
-class HashMap {
+class ChainingHashMap {
   constructor(initialCapacity = 8) {
     this.length = 0;
     this._hashTable = [];
@@ -47,7 +47,7 @@ class HashMap {
 
   _findSlot(key) {
 
-    const hash = HashMap._hashString(key);
+    const hash = ChainingHashMap._hashString(key);
     const start = hash % this._capacity;
 
     for (let i = start; i < (start + this._capacity); i++) {
@@ -55,8 +55,10 @@ class HashMap {
 
       const slot = this._hashTable[index];
 
-      if (slot === undefined || (slot.key === key && !slot.DELETED)) {
+      if (slot === undefined) {
         return index;
+      } else if (slot.key === key && !slot.DELETED) {
+        continue;
       }
     }
   }
@@ -86,4 +88,4 @@ class HashMap {
   }
 }
 
-module.exports = HashMap;
+module.exports = ChainingHashMap;

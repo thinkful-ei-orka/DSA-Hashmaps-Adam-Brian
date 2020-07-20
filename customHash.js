@@ -1,5 +1,5 @@
-class HashMap {
-  constructor(initialCapacity = 8) {
+class CustomHashMap {
+  constructor(initialCapacity = 9) {
     this.length = 0;
     this._hashTable = [];
     this._capacity = initialCapacity;
@@ -9,6 +9,7 @@ class HashMap {
   }
 
   get(key) {
+    key = key.split('').sort().join('')
     const index = this._findSlot(key);
     if (this._hashTable[index] === undefined) {
       throw new Error('Key error');
@@ -17,24 +18,26 @@ class HashMap {
   }
 
   set(key, value) {
+    key = key.split('').sort().join('')
     const loadRatio = (this.length + this._deleted + 1) / this._capacity;
     if (loadRatio > this.MAX_LOAD_RATIO) {
       this._resize(this._capacity * this.SIZE_RATIO);
     }
     //Find the slot where this key should be in
     const index = this._findSlot(key);
-
     if (!this._hashTable[index]) {
       this.length++;
+      this._hashTable[index] = [];
     }
-    this._hashTable[index] = {
+    this._hashTable[index] = [...this._hashTable[index], {
       key,
       value,
       DELETED: false
-    };
+    }];
   }
 
   delete(key) {
+    key = key.split('').sort().join('')
     const index = this._findSlot(key);
     const slot = this._hashTable[index];
     if (slot === undefined) {
@@ -46,16 +49,15 @@ class HashMap {
   }
 
   _findSlot(key) {
-
-    const hash = HashMap._hashString(key);
+    key = key.split('').sort().join('')
+    const hash = CustomHashMap._hashString(key);
     const start = hash % this._capacity;
 
     for (let i = start; i < (start + this._capacity); i++) {
       const index = i % this._capacity;
 
       const slot = this._hashTable[index];
-
-      if (slot === undefined || (slot.key === key && !slot.DELETED)) {
+      if (slot === undefined || (slot[0].key === key && !slot[0].DELETED)) {
         return index;
       }
     }
@@ -77,13 +79,16 @@ class HashMap {
   }
 
   static _hashString(string) {
-    let hash = 5381;
-    for (let i = 0; i < string.length; i++) {
-      hash = (hash << 5) + hash + string.charCodeAt(i);
-      hash = hash & hash;
-    }
-    return hash >>> 0;
+    const sum=string.length+string.split('').map(letter=>letter.charCodeAt(0)).reduce((a,b)=>a+b);
+    return sum
+    // let hash = 5381;
+    // for (let i = 0; i < string.length; i++) {
+    //   hash = (hash << 5) + hash + string.charCodeAt(i);
+    //   hash = hash & hash;
+    // }
+    // console.log(hash >>> 0);
+    // return hash >>> 0;
   }
 }
 
-module.exports = HashMap;
+module.exports = CustomHashMap;
